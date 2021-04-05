@@ -10,7 +10,7 @@ Almost all Django-based REST APIs use some sort of serialization framework.
 [Django Rest Framework](https://www.django-rest-framework.org) is among the most popular, and is the one I chose for the "normal" way of serializing GeoDjango objects. There are [faster frameworks than DRF](https://voidfiles.github.io/python-serialization-benchmark/) available, but in every case they are slower than other approaches. 
 
 ## The Faster Way - Use Django's Serializers 
-A large improvement in serialization speed can be had by not using a serialization framework, and creating a dictionary directly from the returned row(s). In this technique, we must use `json.loads()` because we need to parse the string into something that a serializer can turn into a useful JSON string. This is also the source of most of processing time. 
+A large improvement in serialization speed can be had by not using a serialization framework, and letting Postgres do the GeoJSON serialization (by way of the helper function `AsGeoJSON`). In this technique, we must use `json.loads()` because we need to parse the string returned into something that a serializer can use to produce the final JSON. This is also the source of most of processing time. 
 
 One can look at the view returned by `/django-invalid` to see what happens if we take out the critical `json.loads()` step. Because the GeoJSON is in simple strings, and Django's serializers have no way to know that they contain valid JSON, they are surrounded by double quotes, making them not parseable by a client (well, they are parseable, they just won't be JavaScript objects, but rather useless text). 
 
